@@ -23,3 +23,19 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("login", (user, pass) => {
+  const currentPath = cy.url();
+  if (
+    currentPath !==
+    "https://globalsqa.com/angularJs-protractor/registration-login-example/#/login"
+  ) {
+    cy.visit(
+      "https://globalsqa.com/angularJs-protractor/registration-login-example/#/login"
+    );
+  }
+  if (user !== "") cy.get("#username").type(user);
+  if (pass !== "") cy.get("#password").type(pass);
+
+  if (user !== "" && pass !== "") cy.get(".btn-primary").click();
+});

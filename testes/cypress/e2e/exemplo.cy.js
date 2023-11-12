@@ -1,7 +1,7 @@
 // <reference types="cypress" />
 
 describe("Criando cenário de teste para o site globalQA", () => {
-  it.skip("Caso de teste: Registrando um usuário no site com sucesso", () => {
+  it("Caso de teste: Registrando um usuário no site com sucesso", () => {
     cy.visit(
       "https://globalsqa.com/angularJs-protractor/registration-login-example/#/login"
     );
@@ -14,7 +14,7 @@ describe("Criando cenário de teste para o site globalQA", () => {
     cy.get(".ng-binding").should("contain.text", "Registration successful");
   });
 
-  it.skip("Caso de teste: Registrando um usuário com falha (faltando senha)", () => {
+  it("Caso de teste: Registrando um usuário com falha (faltando senha)", () => {
     cy.visit(
       "https://globalsqa.com/angularJs-protractor/registration-login-example/#/register"
     );
@@ -33,24 +33,24 @@ describe("Criando cenário de teste para o site globalQA", () => {
     cy.get(".btn-primary").should("be.disabled");
   });
 
-  it.skip("Caso de teste: Realizando login com sucesso", () => {
+  it("Caso de teste: Realizando login com sucesso", () => {
     const { user, pass } = criarUsuario();
-    realizarLogin(user, pass);
+    cy.login(user, pass);
     cy.get("h1.ng-binding").should("contain.text", `Hi ${user}!`);
   });
 
-  it.skip("Caso de teste: Realizando login com falha (senha incorreta)", () => {
+  it("Caso de teste: Realizando login com falha (senha incorreta)", () => {
     const { user } = criarUsuario();
-    realizarLogin(user, "senha incorreta");
+    cy.login(user, "senha incorreta");
     cy.get(".ng-binding").should(
       "contain.text",
       "Username or password is incorrect"
     );
   });
 
-  it.skip("Caso de teste: Realizando login com falha (usuário incorreto)", () => {
+  it("Caso de teste: Realizando login com falha (usuário incorreto)", () => {
     const { pass } = criarUsuario();
-    realizarLogin("usuario incorreto", pass);
+    cy.login("usuario incorreto", pass);
 
     cy.get(".ng-binding").should(
       "contain.text",
@@ -58,25 +58,38 @@ describe("Criando cenário de teste para o site globalQA", () => {
     );
   });
 
-  it.skip("Caso de teste: Realizando login com falha (usuário e senha incorretos)", () => {
-    realizarLogin("usuario incorreto", "senha incorreta");
+  it("Caso de teste: Realizando login com falha (usuário e senha incorretos)", () => {
+    cy.login("usuario incorreto", "senha incorreta");
     cy.get(".ng-binding").should(
       "contain.text",
       "Username or password is incorrect"
     );
   });
 
-  it.skip("Caso de teste: Realizando login com falha (usuário e senha vazios)", () => {
-    realizarLogin("", "");
+  it("Caso de teste: Realizando login com falha (usuário e senha vazios)", () => {
+    cy.login("", "");
     cy.get(".btn-primary").should("be.disabled");
   });
 
-  it.skip("Caso de teste: Realizando login com sucesso e logout", () => {
+  it("Caso de teste: Realizando login com sucesso e logout", () => {
     const { user, pass } = criarUsuario();
-    realizarLogin(user, pass);
+    cy.login(user, pass);
     cy.get("h1.ng-binding").should("contain.text", `Hi ${user}!`);
     cy.get(".btn").click();
     cy.get("h2").should("contain.text", "Login");
+  });
+
+  it("Caso de teste: Deletando um usuário com sucesso", () => {
+    const { user, pass } = criarUsuario();
+    cy.login(user, pass);
+    cy.get("h1.ng-binding").should("contain.text", `${user}!`);
+    cy.get(".ng-binding > a").click();
+    cy.get(".btn").click();
+    cy.login(user, pass);
+    cy.get(".ng-binding").should(
+      "have.text",
+      "Username or password is incorrect"
+    );
   });
 });
 
@@ -100,20 +113,4 @@ function criarUsuario() {
   cy.get(".ng-binding").should("contain.text", "Registration successful");
 
   return { user, pass };
-}
-
-function realizarLogin(user, pass) {
-  const currentPath = cy.url();
-  if (
-    currentPath !==
-    "https://globalsqa.com/angularJs-protractor/registration-login-example/#/login"
-  ) {
-    cy.visit(
-      "https://globalsqa.com/angularJs-protractor/registration-login-example/#/login"
-    );
-  }
-  if (user !== "") cy.get("#username").type(user);
-  if (pass !== "") cy.get("#password").type(pass);
-
-  if (user !== "" && pass !== "") cy.get(".btn-primary").click();
 }
